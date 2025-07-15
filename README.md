@@ -1,4 +1,3 @@
-```
 # GNN Baseline Integration Project
 
 This project provides an integrated framework for evaluating and benchmarking multiple Graph Neural Network (GNN) baseline models. It supports both traditional supervised learning approaches and modern contrastive learning techniques, facilitating comprehensive experiments on node classification and link prediction tasks.
@@ -113,25 +112,7 @@ python main_starter/GraphSage.py --task node_classification --dataset mooc --epo
 
 Contributions and suggestions are welcome. Please adhere to the existing code style and include tests for new features or models.
 
----
-
-## Citation
-
-If you use this project in your research, please cite the repository accordingly.
-
----
-
-## License
-
-Specify your license here (e.g., MIT License).
-
----
-
-## Contact
-
-For questions or support, please open an issue or contact the maintainer.
 
 ---
 
 *This project aims to facilitate reproducible and extensible research in graph neural networks by providing a solid baseline integration for both classical and modern GNN approaches.*
-```
