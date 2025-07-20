@@ -4,3 +4,8 @@ logs/
 *.pyc
 *.pyo
 saved_models/
+saved_results/
+KG_predictions/
+*.txt
+*.csv
+*.sh

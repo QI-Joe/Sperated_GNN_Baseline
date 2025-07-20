@@ -439,13 +439,17 @@ def load_KG_dataset(load_: dict) -> tuple[Temporal_Dataloader, NodeIdxMatching]:
     edge_csv.columns = ["src", "dst", "type", "relation"]
     
     node_feat, edge_feat = os.path.join(load_["general"], load_["node_feat"]), os.path.join(load_["general"], load_["edge_feat"])
-    np_node, np_edge = np.load(node_feat, allow_pickle=True), np.load(edge_feat, allow_pickle=True)
+    np_node = torch.load(node_feat).cpu().numpy()
+    if not os.path.exists(edge_feat):
+        np_edge = np.ones(edge_csv.shape[0], dtype=np.float32).reshape(-1, 1)  # make shape to (edge, 1)
+    else:
+        np_edge = torch.load(edge_feat).cpu().numpy()
     
     nodes = node_csv["idx"].values
     edge_index = edge_csv[["src", "dst"]].values.T
     timestamp = edge_csv.index.values
     label = node_csv["label"].values
-    pos = (node_feat, edge_feat)
+    pos = (np_node, np_edge)
     
     graph = Data(x=nodes, edge_index=edge_index, edge_attr=timestamp, y=label, pos=pos)
     return graph, None

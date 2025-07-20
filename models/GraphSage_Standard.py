@@ -44,3 +44,19 @@ class GraphSage_Simple(nn.Module):
         x2_drop = torch.nn.functional.dropout(x2_dot, p=self.drop_rate, training=self.training)
 
         return x2_drop
+    
+    def forward_predict(self, node_feat, edge_index):
+        """
+        Forward pass for link prediction.
+        :param node_feat: Node features.
+        :param edge_index: Edge indices.
+        :return: Node embeddings after GraphSage layers.
+        """
+        x1 = self.sage1.forward(node_feat, edge_index)
+        x1_dot = torch.sigmoid(x1)
+        x1_drop = torch.nn.functional.dropout(x1_dot, p=self.drop_rate, training=self.training)
+
+        x2 = self.sage2.forward(x1_drop, edge_index)
+        x2_dot = torch.sigmoid(x2)
+        x2_drop = torch.nn.functional.dropout(x2_dot, p=self.drop_rate, training=self.training)
+        return x2_drop

@@ -95,9 +95,9 @@ def get_param_dict(dataset_name: str, param: str = "local:coauthor_cs.json"):
 
 def get_link_prediction_args():
     parser = argparse.ArgumentParser('Interface for the link prediction task')
-    parser.add_argument('--dataset_name', type=str, help='dataset to be used', default='mooc',
-                        choices=['dblp', 'mooc'])
-    parser.add_argument('--batch_size', type=int, default=2000, help='batch size')
+    parser.add_argument('--dataset_name', type=str, help='dataset to be used', default='entities',
+                        choices=['dblp', 'mooc', 'entities', 'askubuntu'])
+    parser.add_argument('--batch_size', type=int, default=100, help='batch size')
     parser.add_argument('--model_name', type=str, default='GCN', help='name of the model, note that EdgeBank is only applicable for evaluation',
                         choices=["MVGRL", "GCA", "GCN", "GAT", "GraphSAGE"])
     parser.add_argument('--gpu', type=int, default=0, help='number of gpu to use')
@@ -141,6 +141,8 @@ def get_link_prediction_args():
                         help='activation function for the encoder, only applicable for GCA')
     parser.add_argument('--tau', type=float, default=0.4, help='temperature parameter for the contrastive loss')
     parser.add_argument('--negative_slope', type=float, default=0.0, help='GAT used parameter')
+    parser.add_argument("--dataset_start", type=int, default=0, help="Start index for dataset.")
+    parser.add_argument("--dataset_end", type=int, default=400, help="End index for dataset.")
 
     try:
         args = parser.parse_args()

@@ -50,6 +50,13 @@ class GAT_Simple(nn.Module):
         for layer in self.layers:
             x = layer.forward(x, edge_index, edge_attr=edge_feature)
         return x
+
+    def forward_predict(self, node_feat, edge_index):
+        
+        for layer in self.layers:
+            x = layer.forward(node_feat, edge_index)
+            
+        return x
     
 
 if __name__ == "__main__":

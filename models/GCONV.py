@@ -50,3 +50,21 @@ class GCONV_Simple(torch.nn.Module):
 
         x = self.conv2.forward(x, edge_index, edge_weight=edge_feature)
         return F.log_softmax(x, dim=1)
+
+    def forward_predict(self, node_feat, edge_index):
+        """
+        Forward pass for link prediction.
+        :param node_feat: Node features.
+        :param edge_index: Edge indices.
+        :return: Node embeddings after GCN layers.
+        """
+        x = self.layer1.forward(node_feat)
+        x = F.leaky_relu(x)
+        x = F.dropout(x, p=self.dropout, training=self.training)
+
+        x = self.conv1.forward(x, edge_index)
+        x = F.leaky_relu(x)
+        x = F.dropout(x, p=self.dropout, training=self.training)
+
+        x = self.conv2.forward(x, edge_index)
+        return x

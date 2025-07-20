@@ -10,13 +10,13 @@ import json
 import torch
 import torch.nn as nn
 
-from utils.data_processing import get_link_prediction_data, get_idx_data_loader
+from utils.data_processing import get_link_prediction_data, get_idx_data_loader, get_link_prediction_data4KG_Data
 
 from models.GAT_Standard import GAT_Simple
 from models.GraphSage_Standard import GraphSage_Simple
 from models.GCONV import GCONV_Simple
 from models.modules import MergeLayer
-from utils.utils import get_neighbor_sampler, NegativeEdgeSampler, set_random_seed, get_parameter_sizes, convert_to_gpu, convert2pyg_batch_data
+from utils.utils import NegativeEdgeSampler, set_random_seed, get_parameter_sizes, convert_to_gpu, convert2pyg_batch_data
 
 
 from utils.early_stopping import EarlyStopping
@@ -39,8 +39,20 @@ if __name__ == "__main__":
     suffix_date = time.strftime("%H-%M-%S", time.localtime())
 
     # get data for training, validation and testing
-    node_raw_features, edge_raw_features, data_list = \
-        get_link_prediction_data(dataset_name=args.dataset_name, snapshot=SNAPSHOT, val_ratio=args.val_ratio, test_ratio=args.test_ratio)
+    if args.dataset_name == "entities":
+        dataset_path = {
+            "general": r"../Standard_Dataset/kg/",
+            "node": r"extraction_results_{}_{}_nodes.csv".format(args.dataset_start, args.dataset_end),
+            "edge": r"extraction_results_{}_{}_edges.csv".format(args.dataset_start, args.dataset_end),
+            "node_feat": r"embedding_result/{}_{}_embeddings.pt".format(args.dataset_start, args.dataset_end),
+            "edge_feat": r"embedding_result/{}_{}_edge_embeddings.pt".format(args.dataset_start, args.dataset_end)
+            }
+        node_raw_features, edge_raw_features, data_list = get_link_prediction_data4KG_Data(
+            dataset_name=args.dataset_name, snapshot=SNAPSHOT, kg_path=dataset_path)
+        data_list = [data_list]
+    else:
+        node_raw_features, edge_raw_features, data_list = \
+            get_link_prediction_data(dataset_name=args.dataset_name, snapshot=SNAPSHOT, val_ratio=args.val_ratio, test_ratio=args.test_ratio)
 
     in_channels = node_raw_features.shape[1]
     out_channels = 64
@@ -91,9 +103,6 @@ if __name__ == "__main__":
         logger.info(f"********** Run {run + 1} starts. **********")
 
         logger.info(f'configuration is {args}')
-        
-        snapshot_node_feature = full_data.node_feat
-        snapshot_edge_feature = full_data.edge_feat
         
         shared_kwargs = {'in_channels': in_channels, 'out_channels': out_channels, 'device': device, 'dropout': args.dropout}
         match args.model_name:
@@ -308,7 +317,7 @@ if __name__ == "__main__":
             file.write(result_json)
 
     # store the average metrics at the log of the last run
-    logger.info(f'metrics over {args.num_runs} runs:')
+    logger.info(f'metrics over {SNAPSHOT-2} runs:')
 
     for metric_name in test_metric_all_runs[0].keys():
         logger.info(f'test {metric_name}, {[test_metric_single_run[metric_name] for test_metric_single_run in test_metric_all_runs]}')
